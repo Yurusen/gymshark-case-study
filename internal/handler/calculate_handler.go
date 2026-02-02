@@ -7,34 +7,61 @@ import (
 )
 
 type CalculateRequest struct {
-	Items int `json:"items"`
+	Items     int   `json:"items"`
+	PackSizes []int `json:"packSizes,omitempty"`
 }
 
 type CalculateHandler struct {
-	calculator *service.PackCalculator
+	defaultPackSizes []int
 }
 
-func NewCalculateHandler(calculator *service.PackCalculator) *CalculateHandler {
+func NewCalculateHandler(defaultPackSizes []int) *CalculateHandler {
 	return &CalculateHandler{
-		calculator: calculator,
+		defaultPackSizes: defaultPackSizes,
 	}
 }
 
 func (h *CalculateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+
+	origin := r.Header.Get("Origin")
+
+	allowedOrigins := map[string]bool{
+		"https://yurusen.github.io":                        true,
+		"https://yurusen.github.io/gymshark-case-study-ui": true,
+		"http://localhost:3000":                            true,
+	}
+
+	if allowedOrigins[origin] {
+		w.Header().Set("Access-Control-Allow-Origin", origin)
+	}
+
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	if r.Method == http.MethodOptions {
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
+
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
 	var request CalculateRequest
-	if err := json.NewDecoder(r.Body).Decode(&request); err != nil || request.Items <= 0 {
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil || request.Items < 0 {
 		http.Error(w, "Invalid request payload", http.StatusBadRequest)
 		return
 	}
 
-	result := h.calculator.CalculatePacks(request.Items)
+	packSizes := h.defaultPackSizes
+	if len(request.PackSizes) > 0 {
+		packSizes = request.PackSizes
+	}
+
+	calculator := service.NewPackCalculator(packSizes)
+	result := calculator.CalculatePacks(request.Items)
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
 	json.NewEncoder(w).Encode(result)
 }
