@@ -33,3 +33,40 @@ This project is designed as a **backend service** with clean separation of conce
 
 ## Project Structure
 
+- `cmd/api/main.go` – the main entry point of the application.
+- `internal/config/config.go` – handles application configuration.
+- `internal/domain/pack.go` – defines the core domain models related to packs.
+- `internal/service/pack_calculator.go` – contains the main business logic for calculating the optimal packs.
+- `internal/handler/calculate_handler.go` – exposes the HTTP endpoint for pack calculations.
+- `tests/pack_calculator_test.go` – unit tests for the service layer.
+- `go.mod` – Go module file.
+- `README.md` – this file.
+
+---
+
+## API
+
+This project exposes a single HTTP endpoint:
+
+### `POST /calculate`
+
+Calculates the optimal combination of product packs to fulfill an order according to Gymshark’s shipping rules.
+
+**Request Body:**
+
+- `items` (integer, required) – the total number of items in the order.  
+- `packSizes` (array of integers, optional) – a custom list of pack sizes to use instead of the default `[250, 500, 1000, 2000, 5000]`.
+
+**Example Requests:**
+
+```json
+// Using default pack sizes
+{
+  "items": 12
+}
+
+// Using custom pack sizes
+{
+  "items": 12,
+  "packSizes": [12, 145]
+}
