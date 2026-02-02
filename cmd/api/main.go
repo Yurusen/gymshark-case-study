@@ -3,15 +3,15 @@ package main
 import (
 	"gymshark-case-study/internal/config"
 	"gymshark-case-study/internal/handler"
-	"gymshark-case-study/internal/service"
+	// "gymshark-case-study/internal/service"
 	"log"
 	"net/http"
 )
 
 func main() {
 	packSizes := config.LoadPackSizes()
-	calculator := service.NewPackCalculator(packSizes)
-	calculateHandler := handler.NewCalculateHandler(calculator)
+	// calculator := service.NewPackCalculator(packSizes)
+	calculateHandler := handler.NewCalculateHandler(packSizes)
 
 	http.Handle("/calculate", calculateHandler)
 
