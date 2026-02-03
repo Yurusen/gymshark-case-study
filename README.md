@@ -17,8 +17,7 @@ This project is designed as a **backend service** with clean separation of conce
 - HTTP API endpoint for integration with front-end or other services
 - Fully testable service layer
 - Easy to extend for additional pack sizes or business rules
-- Docker-ready for deployment
-
+  
 ---
 
 ## Tech Stack
@@ -26,7 +25,7 @@ This project is designed as a **backend service** with clean separation of conce
 - **Language:** Go (Golang)
 - **Architecture:** Domain → Service → Handler → Main
 - **Testing:** Go `testing` package with table-driven tests
-- **Deployment:** Can run locally or via Docker
+- **Deployment:** Can run locally or is currently hosted via Railway
 - **Optional UI:** Can integrate with front-end via `/calculate` endpoint
 
 ---
